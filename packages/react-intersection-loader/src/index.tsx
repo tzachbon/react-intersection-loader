@@ -1,4 +1,4 @@
-import { ComponentType, memo, useLayoutEffect, useRef, useState } from 'react';
+import { ComponentType, memo, useRef, useState, useInsertionEffect } from 'react';
 
 type ComponentModule<T extends {}> = { default: ComponentType<T> } | ComponentType<T>;
 
@@ -25,7 +25,7 @@ export function intersectionLoader<T extends {}>({
       <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root}></div>
     );
 
-    useLayoutEffect(() => {
+    useInsertionEffect(() => {
       const observer = new IntersectionObserver(
         async (entries) => {
           for (const entry of entries) {
