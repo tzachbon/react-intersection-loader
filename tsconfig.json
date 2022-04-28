@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/react-intersection-loader/src" },
+    { "path": "./packages/react-intersection-loader/test" }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "react-intersection-loader-workspace",
+  "version": "0.0.0",
+  "description": "Loader react component lazy when the component is visible",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {},
+  "files": [
+    "dist",
+    "!dist/test"
+  ],
+  "keywords": [
+    "react",
+    "react-intersection-loader",
+    "instersection-observer",
+    "lazy-load",
+    "typescript",
+    "javascript"
+  ],
+  "author": {
+    "email": "tzachbonfil@gmail.com",
+    "name": "tzachbon",
+    "url": "https://github.com/tzachbon"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  }
+}
