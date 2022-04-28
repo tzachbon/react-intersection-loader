@@ -1,7 +1,7 @@
 {
   "name": "react-intersection-loader-workspace",
   "version": "0.0.0",
-  "description": "Loader react component lazy when the component is visible",
+  "description": "Load react component lazily when the component is visible",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {},
@@ -24,7 +24,6 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react": "^15.0.0 || ^16.0.0 || ^17.0.0|| ^18.0.0"
   }
 }

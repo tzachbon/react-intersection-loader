@@ -1,17 +1,9 @@
-import { ComponentType, memo, useRef, useState, useInsertionEffect } from 'react';
+import { ComponentType, useLayoutEffect, useRef, useState } from 'react';
 
-type ComponentModule<T extends {}> = { default: ComponentType<T> } | ComponentType<T>;
+export type ComponentModule<T extends {}> = { default: ComponentType<T> } | ComponentType<T>;
 
-function interopDefault<T extends {}>(mod: ComponentModule<T> | undefined) {
-  if (mod && 'default' in mod && mod.default) {
-    return mod.default;
-  }
-
-  return mod as ComponentType<T> | undefined;
-}
-
-interface InteractionLoaderOptions<T extends {}> {
-  load: () => Promise<{ default: ComponentType<T> }>;
+export interface InteractionLoaderOptions<T extends {}> {
+  load: () => Promise<ComponentModule<T>>;
   intersectionObserverOptions?: IntersectionObserverInit;
 }
 
@@ -19,13 +11,11 @@ export function intersectionLoader<T extends {}>({
   load,
   intersectionObserverOptions,
 }: InteractionLoaderOptions<T>): ComponentType<T> {
-  return memo(function (props: T) {
+  return function (props: T) {
     const root = useRef<HTMLDivElement>(null);
-    const [component, setState] = useState(
-      <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root}></div>
-    );
+    const [Component, setState] = useState<ComponentType<T>>();
 
-    useInsertionEffect(() => {
+    useLayoutEffect(() => {
       const observer = new IntersectionObserver(
         async (entries) => {
           for (const entry of entries) {
@@ -44,7 +34,7 @@ export function intersectionLoader<T extends {}>({
               return;
             }
 
-            setState(<Component {...props} />);
+            setState(Component);
           }
         },
         { threshold: 0.1, ...intersectionObserverOptions }
@@ -57,6 +47,18 @@ export function intersectionLoader<T extends {}>({
       };
     }, []);
 
-    return component;
-  });
+    return Component ? (
+      <Component {...props} />
+    ) : (
+      <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root}></div>
+    );
+  };
+}
+
+function interopDefault<T extends {}>(mod: ComponentModule<T> | undefined) {
+  if (mod && 'default' in mod && mod.default) {
+    return mod.default;
+  }
+
+  return mod as ComponentType<T> | undefined;
 }
