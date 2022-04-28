@@ -10,16 +10,15 @@ function interopDefault<T extends {}>(mod: ComponentModule<T> | undefined) {
   return mod as ComponentType<T> | undefined;
 }
 
-interface InteractionLoaderProps<T extends {}> {
+interface InteractionLoaderOptions<T extends {}> {
   load: () => Promise<{ default: ComponentType<T> }>;
   intersectionObserverOptions?: IntersectionObserverInit;
-  props?: T;
 }
 
 export function intersectionLoader<T extends {}>({
   load,
   intersectionObserverOptions,
-}: InteractionLoaderProps<T>): ComponentType<T> {
+}: InteractionLoaderOptions<T>): ComponentType<T> {
   return memo(function (props: T) {
     const root = useRef<HTMLDivElement>(null);
     const [component, setState] = useState(
