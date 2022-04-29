@@ -122,7 +122,7 @@ export class ProjectRunner {
     if (captureResponses) {
       page.on('response', (response) => responses.push(response));
     }
-    await page.goto(url, { waitUntil: captureResponses ? 'networkidle' : 'load' });
+    await page.goto(url, { waitUntil: 'networkidle' });
     return { page, responses };
   }
 
