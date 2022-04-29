@@ -15,7 +15,7 @@ describe('Load', () => {
     isClientOnly: true,
     shouldBuild: true,
     launchOptions: {
-      headless: false,
+      // headless: false,
     },
   }).beforeAndAfter();
 
