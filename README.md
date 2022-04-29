@@ -28,6 +28,15 @@ export default function App() {
 
 > Currently only supported with hooks
 
+## Examples
+
+Testing is a top priority. Therefore I created fixtures with various use-cases of projects that use this library.
+You can check it out [here](./packages/react-intersection-loader/test/fixtures/).\
+\
+I build the fixtures using [webpack](https://webpack.js.org/), serve them and test them with [playwright](https://playwright.dev/).
+
+
+
 ## Installation
 
 ```sh
