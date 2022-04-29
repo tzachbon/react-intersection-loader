@@ -10,7 +10,7 @@ const fixturePath = join(
   basename(__filename).replace(/\.test\.js$/, '')
 );
 
-describe('Interactive', () => {
+describe('Force component interactive', () => {
   const { runner } = ProjectRunner.create({
     path: fixturePath,
     isClientOnly: true,
@@ -22,25 +22,24 @@ describe('Interactive', () => {
     },
   }).beforeAndAfter();
 
-  it('should be rendered when visible with initial data and react to new data', async () => {
+  it('should be rendered with initial data and react to new data', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
     const input = page.locator('input');
+    const lazy = page.locator('#lazy');
 
-    expect(await page.$('#lazy')).toBeNull();
+    expect(await page.$('#lazy')).not.toBeNull();
 
     await input.type('initial-data');
 
-    await page.mouse.wheel(0, page.viewportSize()!.height * 2);
-
     await waitFor(async () => {
-      expect(await page.$eval('#lazy', (el) => el.textContent)).toEqual('initial-data');
+      expect(await lazy.textContent()).toEqual('initial-data');
     });
 
     await input.evaluate((el: HTMLInputElement) => (el.value = ''));
     await input.type('new-data');
 
     await waitFor(async () => {
-      expect(await page.$eval('#lazy', (el) => el.textContent)).toEqual('new-data');
+      expect(await lazy.textContent()).toEqual('new-data');
     });
   });
 });
