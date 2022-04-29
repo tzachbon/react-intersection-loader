@@ -1,4 +1,13 @@
-import { ComponentType, lazy, ReactNode, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import {
+  AllHTMLAttributes,
+  ComponentType,
+  lazy,
+  ReactNode,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { LoaderError } from './error';
 import { interopDefault } from './interop-default';
 import type { ComponentModule } from './types';
@@ -19,6 +28,10 @@ export interface InteractionLoaderOptions {
    * Only when using `force` this is the fallback react node that will be used in the Suspense.
    */
   fallback?: ReactNode;
+  /**
+   * Placeholder element props, used when the element is not visible (For setting the dimensions for example).
+   */
+  placeholderProps?: AllHTMLAttributes<HTMLElement>;
 }
 
 /**
@@ -41,7 +54,7 @@ export interface InteractionLoaderOptions {
  */
 export function intersectionLoader<T extends {}>(
   load: () => Promise<ComponentModule<T>>,
-  { intersectionObserverOptions, force, fallback }: InteractionLoaderOptions = {}
+  { intersectionObserverOptions, force, fallback, placeholderProps }: InteractionLoaderOptions = {}
 ): ComponentType<T> {
   return function (props: T) {
     const root = useRef<HTMLDivElement>(null);
@@ -113,7 +126,7 @@ export function intersectionLoader<T extends {}>(
         <Component.current {...props} />
       </WithSuspense>
     ) : (
-      <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root} />
+      <div {...placeholderProps} dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root} />
     );
   };
 }
