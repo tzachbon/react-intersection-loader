@@ -2,29 +2,14 @@ import { ComponentType, useCallback, useLayoutEffect, useRef, useState, lazy, Su
 
 export type ComponentModule<T extends {}> = { default: ComponentType<T> } | ComponentType<T>;
 
-export interface InteractionLoaderOptions<T extends {}> {
-  /**
-   * Function that must call a dynamic import().\
-   * This must return a Promise which resolves to a module with a React component (it could be default export).
-   *
-   * @example
-   *
-   * // It has default import
-   * () => import('./MyComponent')
-   *
-   * @example
-   *
-   * // Directly return a module with a component
-   * () => import('./MyComponent').MyComponent
-   */
-  load: () => Promise<ComponentModule<T>>;
+export interface InteractionLoaderOptions {
   /**
    * Intersection observer options.\
    * https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#parameters
    */
   intersectionObserverOptions?: IntersectionObserverInit;
   /**
-   * The component to render when the element is not visible.
+   * Renders the component regardless of the element is visible or not.
    * This uses `React.lazy`
    */
   force?: boolean;
@@ -34,12 +19,28 @@ export interface InteractionLoaderOptions<T extends {}> {
   fallback?: ReactNode;
 }
 
-export function intersectionLoader<T extends {}>({
-  load,
-  intersectionObserverOptions,
-  force,
-  fallback,
-}: InteractionLoaderOptions<T>): ComponentType<T> {
+/**
+ *
+ * @param load   /**
+ * Function that must call a dynamic import().\
+ * This must return a Promise which resolves to a module with a React component (it could be default export).
+ *
+ * @example
+ *
+ * // It has default import
+ * () => import('./MyComponent')
+ *
+ * @example
+ *
+ * // Directly return a module with a component
+ * async () => (await import('./MyComponent')).MyComponent
+ *
+ * @param options {InteractionLoaderOptions} Interaction loader options.
+ */
+export function intersectionLoader<T extends {}>(
+  load: () => Promise<ComponentModule<T>>,
+  { intersectionObserverOptions, force, fallback }: InteractionLoaderOptions = {}
+): ComponentType<T> {
   return function (props: T) {
     const root = useRef<HTMLDivElement>(null);
     const [Component, setComponent] = useState<ComponentType<T>>();
@@ -57,21 +58,25 @@ export function intersectionLoader<T extends {}>({
       setComponent(() => component);
     }, []);
 
+    const forceLoadComponent = useCallback(() => {
+      setComponent(() => {
+        const LazyComponent = lazy(() =>
+          load().then((mod) => ({
+            default: interopDefault(mod) as ComponentType<any>,
+          }))
+        );
+
+        return (props: T) => (
+          <Suspense fallback={fallback}>
+            <LazyComponent {...props} />
+          </Suspense>
+        );
+      });
+    }, []);
+
     useLayoutEffect(() => {
       if (force) {
-        setComponent(() => {
-          const LazyComponent = lazy(() =>
-            load().then((mod) => ({
-              default: interopDefault(mod) as ComponentType<any>,
-            }))
-          );
-
-          return (props: T) => (
-            <Suspense fallback={fallback}>
-              <LazyComponent {...props} />
-            </Suspense>
-          );
-        });
+        forceLoadComponent();
         return;
       }
 
@@ -86,7 +91,11 @@ export function intersectionLoader<T extends {}>({
             await loadComponent();
           }
         },
-        { threshold: 0.1, ...intersectionObserverOptions }
+        {
+          threshold: 0.1,
+          rootMargin: '250px',
+          ...intersectionObserverOptions,
+        }
       );
 
       observer.observe(root.current!);
