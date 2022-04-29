@@ -7,6 +7,11 @@ import {
 import playwright, { LaunchOptions, type Browser } from 'playwright';
 import { LocalPortManager } from './local-port-manager';
 import { runService, serve } from './serve';
+import { createTempDirectorySync, loadDirSync, rootDir } from './file-system-helpers';
+import type { IFileSystem } from '@file-services/types';
+import { nodeFs } from '@file-services/node';
+import webpack from 'webpack';
+import { promisify } from 'util';
 
 interface TestHooks {
   after?: MochaHook;
@@ -17,7 +22,11 @@ interface ProjectRunnerOptions {
   launchOptions?: LaunchOptions;
   timeout?: number;
   isClientOnly?: boolean;
+  shouldBuild?: boolean;
   path: string;
+  log?: boolean;
+  fs?: IFileSystem;
+  throwOnBuildError?: boolean;
 }
 
 export class ProjectRunner {
@@ -25,9 +34,19 @@ export class ProjectRunner {
   private browser: Browser | undefined;
   private browserContexts: playwright.BrowserContext[] = [];
   private portManager = new LocalPortManager(9000, 8000);
+  public log: Function;
   public port: number | undefined;
+  private stats: webpack.Stats | null | undefined = undefined;
 
-  private constructor(private options: ProjectRunnerOptions) {}
+  private fs: IFileSystem;
+  private throwOnBuildError: boolean;
+
+  private constructor(private options: ProjectRunnerOptions) {
+    this.fs = this.options.fs ?? nodeFs;
+    this.throwOnBuildError = this.options.throwOnBuildError ?? true;
+    // eslint-disable-next-line no-console
+    this.log = this.options.log ? console.log.bind(console, '[ProjectRunner]') : () => void 0;
+  }
 
   static create(runnerOptions: ProjectRunnerOptions) {
     runnerOptions.timeout ??= 40_000;
@@ -76,7 +95,7 @@ export class ProjectRunner {
 
     const pathToServe = this.options.path;
     const { close } = await (this.options.isClientOnly
-      ? serve(pathToServe, this.port)
+      ? serve(this.options.shouldBuild ? await this.buildClient(pathToServe) : pathToServe, this.port)
       : runService(pathToServe, this.port));
 
     this.destroyCallbacks.add(() => close());
@@ -123,5 +142,77 @@ export class ProjectRunner {
         this.browser = await playwright.chromium.launch(this.options.launchOptions);
       }
     }
+  }
+
+  private async buildClient(projectRoot: string) {
+    const tempDir = createTempDirectorySync(`e2e-test-kit-build-${Date.now()}`);
+
+    this.destroyCallbacks.add(() => tempDir.remove());
+
+    this.fs.copyDirectorySync(projectRoot, tempDir.path);
+    this.fs.symlinkSync(
+      this.fs.join(__dirname, '../../../node_modules'), // #1
+      this.fs.join(tempDir.path, 'node_modules'),
+      'junction'
+    );
+
+    this.options.path = tempDir.path;
+
+    await this.bundle();
+
+    return this.outputDir;
+  }
+
+  private async bundle() {
+    this.log('Bundle Start');
+
+    const compiler = webpack({
+      mode: 'development',
+      output: { path: this.outputDir },
+      ...this.loadWebpackConfig(rootDir),
+      ...this.loadWebpackConfig(this.options.path),
+    });
+
+    this.stats = await promisify(compiler.run.bind(compiler))();
+    if (this.throwOnBuildError && this.stats?.hasErrors()) {
+      throw new Error(this.stats.toString({ colors: true }));
+    }
+    this.log('Bundle Finished');
+  }
+
+  public getBuildErrorMessagesDeep() {
+    function getErrors(compilations: webpack.Compilation[]) {
+      return compilations.reduce((errors, compilation) => {
+        errors.push(...compilation.errors);
+        errors.push(...getErrors(compilation.children));
+        return errors;
+      }, [] as webpack.WebpackError[]);
+    }
+
+    return getErrors([this.stats!.compilation]);
+  }
+  public getBuildWarningsMessagesDeep() {
+    function getWarnings(compilations: webpack.Compilation[]) {
+      return compilations.reduce((warnings, compilation) => {
+        warnings.push(...compilation.warnings);
+        warnings.push(...getWarnings(compilation.children));
+        return warnings;
+      }, [] as webpack.WebpackError[]);
+    }
+
+    return getWarnings([this.stats!.compilation]);
+  }
+
+  public get outputDir() {
+    return this.fs.join(this.options.path, 'dist');
+  }
+
+  private loadWebpackConfig(rootDir = this.options.path) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require(this.fs.join(rootDir, 'webpack.config')) as webpack.Configuration;
+  }
+
+  public getProjectFiles() {
+    return loadDirSync(this.options.path);
   }
 }
