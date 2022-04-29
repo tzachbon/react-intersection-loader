@@ -1,6 +1,6 @@
 # React intersection loader
 
-Lazy load your components only when its visible.
+Lazy load your components only when they're visible.
 
 ![react-intersection-loader-demo](./react-intersection-loader.gif)
 
