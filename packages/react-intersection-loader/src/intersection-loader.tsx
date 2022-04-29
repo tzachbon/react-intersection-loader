@@ -1,4 +1,5 @@
 import { ComponentType, lazy, ReactNode, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { LoaderError } from './error';
 import { interopDefault } from './interop-default';
 import type { ComponentModule } from './types';
 import { WithSuspense } from './with-suspense';
@@ -52,7 +53,7 @@ export function intersectionLoader<T extends {}>(
 
       if (!component) {
         setForceUpdate(() => {
-          throw new Error('Component is not defined');
+          throw new LoaderError('Component is not defined');
         });
         return;
       }
