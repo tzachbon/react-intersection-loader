@@ -1,6 +1,6 @@
 {
   "name": "e2e-test-kit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "private": true,
   "main": "dist/index.js",
