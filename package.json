@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "copy:readme": "cp ./README.md packages/react-intersection-loader/README.md",
     "build": "tsc --build",
     "clean": "rimraf packages/**/dist .temp",
     "lint": "eslint .",

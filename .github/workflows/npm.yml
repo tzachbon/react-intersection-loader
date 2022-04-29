@@ -16,6 +16,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run lint
+      - run: npm run copy:readme
       - run: npx pleb@4 publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
