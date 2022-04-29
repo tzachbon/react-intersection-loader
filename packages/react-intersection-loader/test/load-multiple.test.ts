@@ -21,7 +21,7 @@ describe('Load multiple', () => {
     },
   }).beforeAndAfter();
 
-  it('should be rendered only on scroll', async () => {
+  it('should be rendered only on scroll one by one', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
 
     let lazyOneLoaded = false;
