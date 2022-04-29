@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { fork, spawn } from 'child_process';
 import { getPortFromChildProcess } from './helper';
 
