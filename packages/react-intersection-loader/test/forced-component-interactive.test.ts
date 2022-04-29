@@ -27,7 +27,9 @@ describe('Force component interactive', () => {
     const input = page.locator('input');
     const lazy = page.locator('#lazy');
 
-    expect(await page.$('#lazy')).not.toBeNull();
+    await waitFor(async () => {
+      expect(await page.$('#lazy')).not.toBeNull();
+    });
 
     await input.type('initial-data');
 
