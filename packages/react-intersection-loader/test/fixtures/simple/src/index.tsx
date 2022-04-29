@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { intersectionLoader } from 'react-intersection-loader';
 
-const LazyComponent = intersectionLoader(() => import('./lazy'));
+const LazyComponent = intersectionLoader(() => import(/* webpackChunkName: "lazy" */ './lazy'));
 
 createRoot(document.body).render(
   <>

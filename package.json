@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "clean": "rimraf dist",
+    "clean": "rimraf packages/**/dist .temp",
     "lint": "eslint .",
     "pretest": "npm run build",
     "test": "mocha \"packages/**/dist/test/**/*.test.js\" --parallel",

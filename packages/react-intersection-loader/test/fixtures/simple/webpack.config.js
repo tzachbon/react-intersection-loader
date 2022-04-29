@@ -3,15 +3,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type import('webpack').Configuration */
 module.exports = {
-  mode: 'production',
+  mode: 'development',
+  devtool: 'source-map',
   context: __dirname,
   entry: {
     main: require.resolve('./src/index.tsx'),
   },
   output: {
-    filename: '[name].[contenthash].js',
+    filename: '[name].js',
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -22,7 +22,6 @@ module.exports = {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
-        options: {},
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
