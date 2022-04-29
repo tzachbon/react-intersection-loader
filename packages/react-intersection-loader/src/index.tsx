@@ -62,7 +62,7 @@ export function intersectionLoader<T extends {}>(
       setComponent(() => {
         const LazyComponent = lazy(() =>
           load().then((mod) => ({
-            default: interopDefault(mod) as ComponentType<any>,
+            default: interopDefault(mod) as ComponentType<unknown>,
           }))
         );
 

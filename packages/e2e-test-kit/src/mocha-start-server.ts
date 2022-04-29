@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { BrowserServer, chromium } from 'playwright';
 
 export const mochaGlobalSetup = async function (this: { server: BrowserServer }) {
