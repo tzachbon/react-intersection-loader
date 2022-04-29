@@ -9,6 +9,11 @@
     "dist",
     "!dist/test"
   ],
+  "homepage": "https://github.com/tzachbon/react-intersection-loader#readme",
+  "bugs": {
+    "url": "https://github.com/tzachbon/react-intersection-loader/issues",
+    "email": "tzachbonfil@gmail.com"
+  },
   "keywords": [
     "react",
     "react-intersection-loader",
