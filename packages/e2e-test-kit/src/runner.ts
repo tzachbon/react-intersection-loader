@@ -7,7 +7,7 @@ import {
 import playwright, { LaunchOptions, type Browser } from 'playwright';
 import { LocalPortManager } from './local-port-manager';
 import { runService, serve } from './serve';
-import { createTempDirectorySync, loadDirSync, rootDir } from './file-system-helpers';
+import { createTempDirectorySync, loadDirSync } from './file-system-helpers';
 import type { IFileSystem } from '@file-services/types';
 import { nodeFs } from '@file-services/node';
 import webpack from 'webpack';
@@ -169,7 +169,6 @@ export class ProjectRunner {
     const compiler = webpack({
       mode: 'development',
       output: { path: this.outputDir },
-      ...this.loadWebpackConfig(rootDir),
       ...this.loadWebpackConfig(this.options.path),
     });
 
