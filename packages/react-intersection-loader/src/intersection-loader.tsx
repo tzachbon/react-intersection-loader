@@ -63,6 +63,14 @@ export function intersectionLoader<T extends {}>(
     }, []);
 
     useLayoutEffect(() => {
+      if (!('IntersectionObserver' in window)) {
+        throw new LoaderError('Intersection observer is not supported');
+      }
+
+      if (!root.current) {
+        return;
+      }
+
       if (force) {
         return;
       }
@@ -85,7 +93,7 @@ export function intersectionLoader<T extends {}>(
         }
       );
 
-      observer.observe(root.current!);
+      observer.observe(root.current);
 
       return () => {
         observer?.disconnect();
@@ -105,7 +113,7 @@ export function intersectionLoader<T extends {}>(
         <Component.current {...props} />
       </WithSuspense>
     ) : (
-      <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root}></div>
+      <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root} />
     );
   };
 }
