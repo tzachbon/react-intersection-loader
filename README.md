@@ -2,6 +2,8 @@
 
 Lazy load your components only when its visible.
 
+![react-intersection-loader-demo](./react-intersection-loader.gif)
+
 ```tsx
 import { intersectionLoader } from 'react-intersection-loader';
 
