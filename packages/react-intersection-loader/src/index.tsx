@@ -43,40 +43,25 @@ export function intersectionLoader<T extends {}>(
 ): ComponentType<T> {
   return function (props: T) {
     const root = useRef<HTMLDivElement>(null);
-    const [Component, setComponent] = useState<ComponentType<T>>();
+    const [, setForceUpdate] = useState<boolean>();
+    const Component = useRef<ComponentType<T>>();
 
     const loadComponent = useCallback(async () => {
       const component = interopDefault(await load());
 
       if (!component) {
-        setComponent(() => {
+        setForceUpdate(() => {
           throw new Error('Component is not defined');
         });
         return;
       }
 
-      setComponent(() => component);
-    }, []);
-
-    const forceLoadComponent = useCallback(() => {
-      setComponent(() => {
-        const LazyComponent = lazy(() =>
-          load().then((mod) => ({
-            default: interopDefault(mod) as ComponentType<unknown>,
-          }))
-        );
-
-        return (props: T) => (
-          <Suspense fallback={fallback}>
-            <LazyComponent {...props} />
-          </Suspense>
-        );
-      });
+      Component.current = component;
+      setForceUpdate((f) => !f);
     }, []);
 
     useLayoutEffect(() => {
       if (force) {
-        forceLoadComponent();
         return;
       }
 
@@ -105,8 +90,18 @@ export function intersectionLoader<T extends {}>(
       };
     }, []);
 
-    return Component !== undefined ? (
-      <Component {...props} />
+    if (force) {
+      Component.current ??= lazy(() =>
+        load().then((mod) => ({
+          default: interopDefault(mod) as ComponentType<unknown>,
+        }))
+      );
+    }
+
+    return Component.current !== undefined ? (
+      <WithSuspense use={force} fallback={fallback}>
+        <Component.current {...props} />
+      </WithSuspense>
     ) : (
       <div dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root}></div>
     );
@@ -119,4 +114,12 @@ function interopDefault<T extends {}>(mod: ComponentModule<T> | undefined) {
   }
 
   return mod as ComponentType<T> | undefined;
+}
+
+function WithSuspense({ fallback, children, use }: { fallback: ReactNode; use?: boolean; children: ReactNode }) {
+  if (use) {
+    return <Suspense fallback={fallback}>{children}</Suspense>;
+  } else {
+    return <>{children}</>;
+  }
 }
