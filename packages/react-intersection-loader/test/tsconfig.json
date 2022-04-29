@@ -4,5 +4,6 @@
     "outDir": "../dist/test",
     "types": ["node", "mocha"]
   },
-  "references": [{ "path": "../src" }, { "path": "../../e2e-test-kit/src" }]
+  "references": [{ "path": "../src" }, { "path": "../../e2e-test-kit/src" }],
+  "exclude": ["fixtures"]
 }
