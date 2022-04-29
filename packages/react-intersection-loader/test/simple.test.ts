@@ -23,6 +23,7 @@ describe('Simple', () => {
 
   it('should be rendered only on scroll', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
+    const lazy = page.locator('#lazy');
 
     let chunkLoaded = false;
 
@@ -39,7 +40,7 @@ describe('Simple', () => {
 
     await waitFor(async () => {
       expect(chunkLoaded).toEqual(true);
-      expect(await page.$eval('#lazy', (el) => el.textContent)).toEqual('Lazy!');
+      expect(await lazy.textContent()).toEqual('Lazy!');
     });
   });
 });

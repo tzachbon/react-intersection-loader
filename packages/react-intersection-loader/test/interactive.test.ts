@@ -25,6 +25,7 @@ describe('Interactive', () => {
   it('should be rendered when visible with initial data and react to new data', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
     const input = page.locator('input');
+    const lazy = page.locator('#lazy');
 
     expect(await page.$('#lazy')).toBeNull();
 
@@ -33,14 +34,14 @@ describe('Interactive', () => {
     await page.mouse.wheel(0, page.viewportSize()!.height * 2);
 
     await waitFor(async () => {
-      expect(await page.$eval('#lazy', (el) => el.textContent)).toEqual('initial-data');
+      expect(await lazy.textContent()).toEqual('initial-data');
     });
 
     await input.evaluate((el: HTMLInputElement) => (el.value = ''));
     await input.type('new-data');
 
     await waitFor(async () => {
-      expect(await page.$eval('#lazy', (el) => el.textContent)).toEqual('new-data');
+      expect(await lazy.textContent()).toEqual('new-data');
     });
   });
 });

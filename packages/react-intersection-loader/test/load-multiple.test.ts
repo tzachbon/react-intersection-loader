@@ -23,6 +23,8 @@ describe('Load multiple', () => {
 
   it('should be rendered only on scroll one by one', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
+    const lazyOne = page.locator('#lazy-one');
+    const lazyTwo = page.locator('#lazy-two');
 
     let lazyOneLoaded = false;
     let lazyTwoLoaded = false;
@@ -44,7 +46,7 @@ describe('Load multiple', () => {
 
     await waitFor(async () => {
       expect(lazyOneLoaded).toEqual(true);
-      expect(await page.$eval('#lazy-one', (el) => el.textContent)).toEqual('lazy-one');
+      expect(await lazyOne.textContent()).toEqual('lazy-one');
     });
 
     expect(await page.$('#lazy-two')).toBeNull();
@@ -54,7 +56,7 @@ describe('Load multiple', () => {
 
     await waitFor(async () => {
       expect(lazyTwoLoaded).toEqual(true);
-      expect(await page.$eval('#lazy-two', (el) => el.textContent)).toEqual('lazy-two');
+      expect(await lazyTwo.textContent()).toEqual('lazy-two');
     });
   });
 });

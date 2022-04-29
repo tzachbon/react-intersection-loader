@@ -25,6 +25,8 @@ describe('Force', () => {
   it('should be rendered regardless of visibility', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
 
-    await waitFor(() => expect(page.$eval('#lazy', (el) => el.textContent)).resolves.toEqual('Forced to be in screen'));
+    await waitFor(async () => {
+      expect(await page.locator('#lazy').textContent()).toEqual('Forced to be in screen');
+    });
   });
 });
