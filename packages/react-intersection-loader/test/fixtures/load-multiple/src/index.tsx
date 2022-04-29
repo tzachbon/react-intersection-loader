@@ -1,7 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import { intersectionLoader } from 'react-intersection-loader';
 
-const LazyOne = intersectionLoader(() => import(/* webpackChunkName: "lazy-one" */ './lazy-one'));
+const LazyOne = intersectionLoader(() => import(/* webpackChunkName: "lazy-one" */ './lazy-one'), {
+  placeholderProps: { style: { height: '100vh', width: '100vw', background: 'salmon' } },
+});
 const LazyTwo = intersectionLoader(() => import(/* webpackChunkName: "lazy-two" */ './lazy-two'));
 
 createRoot(document.body).render(
