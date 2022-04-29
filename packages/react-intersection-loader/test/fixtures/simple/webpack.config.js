@@ -3,9 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /** @type import('webpack').Configuration */
 module.exports = {
+  mode: 'production',
   context: __dirname,
   entry: {
     main: require.resolve('./src/index.tsx'),
+  },
+  output: {
+    filename: '[name].[contenthash].js',
   },
   devtool: 'source-map',
   module: {

@@ -165,11 +165,10 @@ export class ProjectRunner {
 
   private async bundle() {
     this.log('Bundle Start');
-
+    const config = this.loadWebpackConfig(this.options.path);
     const compiler = webpack({
-      mode: 'development',
-      output: { path: this.outputDir },
-      ...this.loadWebpackConfig(this.options.path),
+      ...config,
+      output: { path: this.outputDir, ...config.output },
     });
 
     this.stats = await promisify(compiler.run.bind(compiler))();

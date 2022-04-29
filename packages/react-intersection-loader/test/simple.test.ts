@@ -1,6 +1,7 @@
 import { expect } from 'expect';
 import { ProjectRunner } from 'e2e-test-kit';
 import { basename, dirname, join } from 'path';
+import { waitFor } from 'promise-assist';
 
 const fixturePath = join(
   dirname(require.resolve('react-intersection-loader/package.json')),
@@ -9,21 +10,24 @@ const fixturePath = join(
   basename(__filename).replace(/\.test\.js$/, '')
 );
 
-describe('Load', () => {
+describe('Simple', () => {
   const { runner } = ProjectRunner.create({
     path: fixturePath,
     isClientOnly: true,
     shouldBuild: true,
     launchOptions: {
       // headless: false,
+      // devtools: true,
     },
   }).beforeAndAfter();
 
-  it('should render component on scroll', async () => {
+  it('should be rendered only on scroll', async () => {
     const { page } = await runner.openPage(runner.baseUrl());
 
-    // eslint-disable-next-line no-console
-    console.log(page.url());
-    expect(1).toEqual(2);
+    expect(await page.$('#lazy')).toBeNull();
+
+    await page.mouse.wheel(0, page.viewportSize()!.height * 2);
+
+    await waitFor(() => expect(page.$eval('#lazy', (el) => el.textContent)).resolves.toEqual('Lazy!'));
   });
 });
