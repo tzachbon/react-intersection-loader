@@ -6,7 +6,7 @@ Lazy load your components only when they're visible.
 [![checks](https://badgen.net/github/checks/tzachbon/react-intersection-loader)](https://github.com/tzachbon/react-intersection-loader/actions)
 [![version](https://badgen.net/npm/v/react-intersection-loader)](https://www.npmjs.com/package/react-intersection-loader)
 
-![react-intersection-loader-demo](./react-intersection-loader.gif)
+![react-intersection-loader-demo](https://github.com/tzachbon/react-intersection-loader/blob/master/react-intersection-loader.gif?raw=true)
 
 ```tsx
 import { intersectionLoader } from 'react-intersection-loader';
