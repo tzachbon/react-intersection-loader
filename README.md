@@ -2,7 +2,9 @@
 
 Lazy load your components only when they're visible.
 
-![release](https://badgen.net/github/release/tzachbon/react-intersection-loader) ![checks](https://badgen.net/github/checks/tzachbon/react-intersection-loader) 
+[![release](https://badgen.net/github/release/tzachbon/react-intersection-loader)](https://github.com/tzachbon/react-intersection-loader/releases)
+[![checks](https://badgen.net/github/checks/tzachbon/react-intersection-loader)](https://github.com/tzachbon/react-intersection-loader/actions)
+[![version](https://badgen.net/npm/v/react-intersection-loader)](https://www.npmjs.com/package/react-intersection-loader)
 
 ![react-intersection-loader-demo](./react-intersection-loader.gif)
 
