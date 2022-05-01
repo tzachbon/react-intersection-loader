@@ -5,7 +5,7 @@ import {
   type HookFunction as MochaHook,
 } from 'mocha';
 import playwright, { LaunchOptions, type Browser } from 'playwright';
-import { LocalPortManager } from './local-port-manager';
+import { Ports } from 'ensure-port';
 import { runService, serve } from './serve';
 import { createTempDirectorySync, loadDirSync } from './file-system-helpers';
 import type { IFileSystem } from '@file-services/types';
@@ -33,7 +33,7 @@ export class ProjectRunner {
   private destroyCallbacks = new Set<() => void>();
   private browser: Browser | undefined;
   private browserContexts: playwright.BrowserContext[] = [];
-  private portManager = new LocalPortManager(9000, 8000);
+  private ports: Ports;
   public log: Function;
   public port: number | undefined;
   private stats: webpack.Stats | null | undefined = undefined;
@@ -46,6 +46,7 @@ export class ProjectRunner {
     this.throwOnBuildError = this.options.throwOnBuildError ?? true;
     // eslint-disable-next-line no-console
     this.log = this.options.log ? console.log.bind(console, '[ProjectRunner]') : () => void 0;
+    this.ports = new Ports({ startPort: 8000, endPort: 9000 }, { fs: this.fs });
   }
 
   static create(runnerOptions: ProjectRunnerOptions) {
@@ -70,12 +71,12 @@ export class ProjectRunner {
 
       afterEach('cleanup open pages', async () => {
         await runner.closeAllPages();
-
-        runner.portManager.releasePorts();
+        await runner.ports.releasePorts();
       });
 
       after('destroy runner', async () => {
         await runner.destroy();
+        await runner.ports.dispose();
       });
 
       return response;
@@ -91,7 +92,7 @@ export class ProjectRunner {
   }
 
   public async run() {
-    this.port = await this.portManager.ensurePort();
+    this.port = await this.ports.ensurePort();
 
     const pathToServe = this.options.path;
     const { close } = await (this.options.isClientOnly
