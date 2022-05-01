@@ -17,27 +17,39 @@ export interface InteractionLoaderOptions {
   /**
    * Intersection observer options.\
    * https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#parameters
+   *
+   * @default
+   * - rootMargin: '250px'
+   * - threshold: 0.1
+   *
    */
   intersectionObserverOptions?: IntersectionObserverInit;
   /**
    * Renders the component regardless of the element is visible or not.
    * This uses `React.lazy`
+   *
+   * @default false
    */
   force?: boolean;
   /**
-   * Only when using `force` this is the fallback react node that will be used in the Suspense.
+   * Should warp the component with `React.Suspense`
+   *
+   * @default true
+   */
+  suspense?: boolean;
+  /**
+   * Only when using `suspense` or `force` this is the fallback react node that will be used in the Suspense.
    */
   fallback?: ReactNode;
   /**
-   * Placeholder element props, used when the element is not visible (For setting the dimensions for example).
+   * Placeholder element props, used when the element is not visible (Setting the dimensions for example).
    */
   placeholderProps?: AllHTMLAttributes<HTMLElement>;
 }
 
 /**
  *
- * @param load   /**
- * Function that must call a dynamic import().\
+ * @param load Function that must call a dynamic import().\
  * This must return a Promise which resolves to a module with a React component (it could be default export).
  *
  * @example
@@ -54,7 +66,7 @@ export interface InteractionLoaderOptions {
  */
 export function intersectionLoader<T extends {}>(
   load: () => Promise<ComponentModule<T>>,
-  { intersectionObserverOptions, force, fallback, placeholderProps }: InteractionLoaderOptions = {}
+  { intersectionObserverOptions, force, fallback, placeholderProps, suspense = true }: InteractionLoaderOptions = {}
 ): ComponentType<T> {
   return function (props: T) {
     const root = useRef<HTMLDivElement>(null);
@@ -122,7 +134,7 @@ export function intersectionLoader<T extends {}>(
     }
 
     return Component.current !== undefined ? (
-      <WithSuspense use={force} fallback={fallback}>
+      <WithSuspense use={force || suspense} fallback={fallback}>
         <Component.current {...props} />
       </WithSuspense>
     ) : (
