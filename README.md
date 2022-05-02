@@ -11,7 +11,7 @@ Lazy load your components only when they're visible.
 ```tsx
 import { intersectionLoader } from 'react-intersection-loader';
 
-// This is will be imported (lazy loaded) only when the user is about to see it.
+// This will be imported (lazy loaded) only when the user is about to see it.
 const MyComponent = intersectionLoader(() => import('./MyComponent'));
 
 export default function App() {
