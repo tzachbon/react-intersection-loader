@@ -27,6 +27,7 @@ interface ProjectRunnerOptions {
   log?: boolean;
   fs?: IFileSystem;
   throwOnBuildError?: boolean;
+  port?: number;
 }
 
 export class ProjectRunner {
@@ -92,7 +93,7 @@ export class ProjectRunner {
   }
 
   public async run() {
-    this.port = await this.ports.ensure();
+    this.port = this.options.port ?? (await this.ports.ensure());
 
     const pathToServe = this.options.path;
     const { close } = await (this.options.isClientOnly
@@ -137,8 +138,8 @@ export class ProjectRunner {
 
   private async createBrowser() {
     if (!this.browser) {
-      if (process.env.PLAYWRIGHT_SERVER) {
-        this.browser = await playwright.chromium.connect(process.env.PLAYWRIGHT_SERVER, this.options.launchOptions);
+      if (process.env.ENDPOINT_URL) {
+        this.browser = await playwright.chromium.connectOverCDP(process.env.ENDPOINT_URL, this.options.launchOptions);
       } else {
         this.browser = await playwright.chromium.launch(this.options.launchOptions);
       }

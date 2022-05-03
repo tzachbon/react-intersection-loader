@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "request": "launch",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "type": "pwa-node",
       "request": "launch",
       "name": "Mocha Current",
@@ -16,8 +23,15 @@
       "skipFiles": ["<node_internals>/**"],
       "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
       "env": {
-        "FILE": "${file}"
+        "FILE": "${file}",
+        "ENDPOINT_URL": "http://localhost:9222/"
       }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Test and attach debugger",
+      "configurations": ["Attach to Chrome", "Mocha Current"]
     }
   ]
 }
