@@ -15,7 +15,9 @@ describe('Force', () => {
   const { runner } = ProjectRunner.create({
     path: fixturePath,
     isClientOnly: true,
-    shouldBuild: true,
+    shouldBuild: {
+      bundle: true,
+    },
     launchOptions: {
       // headless: false,
       // devtools: true,

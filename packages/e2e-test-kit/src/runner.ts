@@ -12,17 +12,25 @@ import type { IFileSystem } from '@file-services/types';
 import { nodeFs } from '@file-services/node';
 import webpack from 'webpack';
 import { promisify } from 'util';
+import { once } from 'events';
+import { fork } from 'child_process';
 
 interface TestHooks {
   after?: MochaHook;
   afterEach?: MochaHook;
   before?: MochaHook;
 }
+
+interface BuildOptions {
+  bundle: boolean;
+  typescript: boolean;
+}
+
 interface ProjectRunnerOptions {
   launchOptions?: LaunchOptions;
   timeout?: number;
   isClientOnly?: boolean;
-  shouldBuild?: boolean;
+  shouldBuild?: boolean | Partial<BuildOptions>;
   path: string;
   log?: boolean;
   fs?: IFileSystem;
@@ -41,6 +49,7 @@ export class ProjectRunner {
 
   private fs: IFileSystem;
   private throwOnBuildError: boolean;
+  private buildOptions: BuildOptions;
 
   private constructor(private options: ProjectRunnerOptions) {
     this.fs = this.options.fs ?? nodeFs;
@@ -48,6 +57,10 @@ export class ProjectRunner {
     // eslint-disable-next-line no-console
     this.log = this.options.log ? console.log.bind(console, '[ProjectRunner]') : () => void 0;
     this.ports = new Ports({ startPort: 8000, endPort: 9000 }, { fs: this.fs });
+    this.buildOptions =
+      typeof this.options.shouldBuild === 'boolean'
+        ? { bundle: this.options.shouldBuild, typescript: this.options.shouldBuild }
+        : { bundle: true, typescript: true, ...this.options.shouldBuild };
   }
 
   static create(runnerOptions: ProjectRunnerOptions) {
@@ -95,14 +108,34 @@ export class ProjectRunner {
   public async run() {
     this.port = this.options.port ?? (await this.ports.ensure());
 
-    const pathToServe = this.options.path;
+    this.prepareBuild(this.options.path);
+
+    if (this.buildOptions.typescript) {
+      await this.buildTypescript();
+    }
+
+    if (this.buildOptions.bundle) {
+      await this.bundle();
+    }
+
     const { close } = await (this.options.isClientOnly
-      ? serve(this.options.shouldBuild ? await this.buildClient(pathToServe) : pathToServe, this.port)
-      : runService(pathToServe, this.port));
+      ? serve(this.outputDir, this.port)
+      : runService(require.resolve(this.fs.join(this.outputDir, 'server')), this.port));
 
     this.destroyCallbacks.add(() => close());
 
     await this.createBrowser();
+  }
+
+  public buildTypescript() {
+    const configPath = this.fs.join(this.options.path, 'tsconfig.json');
+    const tscPath = this.fs.join(this.fs.dirname(require.resolve('typescript/package.json')), 'bin', 'tsc');
+
+    return once(fork(tscPath, ['-p', configPath]), 'exit').then(([code]) => {
+      if (this.throwOnBuildError && code === 1) {
+        throw new Error(`tsc exited with code ${String(code)}`);
+      }
+    });
   }
 
   public async closeAllPages() {
@@ -146,7 +179,7 @@ export class ProjectRunner {
     }
   }
 
-  private async buildClient(projectRoot: string) {
+  private prepareBuild(projectRoot: string) {
     const tempDir = createTempDirectorySync(`e2e-test-kit-build-${Date.now()}`);
 
     this.destroyCallbacks.add(() => tempDir.remove());
@@ -159,10 +192,6 @@ export class ProjectRunner {
     );
 
     this.options.path = tempDir.path;
-
-    await this.bundle();
-
-    return this.outputDir;
   }
 
   private async bundle() {
