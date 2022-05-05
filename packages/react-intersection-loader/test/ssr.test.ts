@@ -16,7 +16,7 @@ describe('SSR', () => {
     shouldBuild: true,
     launchOptions: {
       // headless: false,
-      devtools: true,
+      // devtools: true,
     },
   }).beforeAndAfter();
 
