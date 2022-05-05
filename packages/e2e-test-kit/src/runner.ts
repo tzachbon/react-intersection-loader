@@ -60,7 +60,7 @@ export class ProjectRunner {
     this.buildOptions =
       typeof this.options.shouldBuild === 'boolean'
         ? { bundle: this.options.shouldBuild, typescript: this.options.shouldBuild }
-        : { bundle: true, typescript: true, ...this.options.shouldBuild };
+        : { bundle: true, typescript: false, ...this.options.shouldBuild };
   }
 
   static create(runnerOptions: ProjectRunnerOptions) {
