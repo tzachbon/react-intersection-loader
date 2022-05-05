@@ -24,24 +24,16 @@ describe('Simple', () => {
   }).beforeAndAfter();
 
   it('should be rendered only on scroll', async () => {
-    const { page } = await runner.openPage(runner.baseUrl());
+    const { page, responses } = await runner.openPage(runner.baseUrl(), { captureResponses: true });
     const lazy = page.locator('#lazy');
 
-    let chunkLoaded = false;
-
-    page.on('request', (request) => {
-      if (request.url() === `${runner.baseUrl()}/lazy.js`) {
-        chunkLoaded = true;
-      }
-    });
-
     expect(await page.$('#lazy')).toBeNull();
-    expect(chunkLoaded).toEqual(false);
+    expect(responses.map((r) => r.url())).not.toEqual(expect.arrayContaining([`${runner.baseUrl()}/lazy.js`]));
 
     await page.mouse.wheel(0, page.viewportSize()!.height * 2);
 
     await waitFor(async () => {
-      expect(chunkLoaded).toEqual(true);
+      expect(responses.map((r) => r.url())).toEqual(expect.arrayContaining([`${runner.baseUrl()}/lazy.js`]));
       expect(await lazy.textContent()).toEqual('Lazy!');
     });
   });
