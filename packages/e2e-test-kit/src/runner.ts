@@ -174,9 +174,13 @@ export class ProjectRunner {
       try {
         this.browser = await playwright.chromium.connectOverCDP(process.env.ENDPOINT_URL!, this.options.launchOptions);
       } catch {
-        if (process.env.PLAYWRIGHT_SERVER) {
+        const shouldShowBrowser =
+          this.options.launchOptions && (!this.options.launchOptions.headless || this.options.launchOptions.devtools);
+
+        if (process.env.PLAYWRIGHT_SERVER && !shouldShowBrowser) {
           this.browser = await playwright.chromium.connect(process.env.PLAYWRIGHT_SERVER, this.options.launchOptions);
         } else {
+          this.log('Launching browser...');
           this.browser = await playwright.chromium.launch(this.options.launchOptions);
         }
       }
@@ -190,7 +194,7 @@ export class ProjectRunner {
 
     this.fs.copyDirectorySync(projectRoot, tempDir.path);
     this.fs.symlinkSync(
-      this.fs.join(__dirname, '../../../node_modules'), // #1
+      this.fs.join(__dirname, '../../../node_modules'),
       this.fs.join(tempDir.path, 'node_modules'),
       'junction'
     );
