@@ -32,7 +32,15 @@ export default function App() {
 
 ```
 
-> Currently only supported with hooks
+### Support
+
+#### React
+
+Currently only supported with hooks, react `>=16.8.0`
+
+#### SSR (Server-side rendering) in other works - Hydration
+
+Fully supported!
 
 ## Examples
 
