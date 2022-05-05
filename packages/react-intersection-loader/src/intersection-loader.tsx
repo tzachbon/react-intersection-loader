@@ -4,6 +4,7 @@ import {
   lazy,
   ReactNode,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -12,6 +13,8 @@ import { LoaderError } from './error';
 import { interopDefault } from './interop-default';
 import type { ComponentModule } from './types';
 import { WithSuspense } from './with-suspense';
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 export interface InteractionLoaderOptions {
   /**
@@ -87,7 +90,7 @@ export function intersectionLoader<T extends {}>(
       setForceUpdate((f) => !f);
     }, []);
 
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       if (!('IntersectionObserver' in window)) {
         throw new LoaderError('Intersection observer is not supported');
       }
