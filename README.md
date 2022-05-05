@@ -38,9 +38,9 @@ export default function App() {
 
 Currently only supported with hooks, react `>=16.8.0`
 
-#### SSR (Server-side rendering) in other works - Hydration
+#### SSR (Server-side rendering)
 
-Fully supported!
+Full support SSR and hydration!
 
 ## Examples
 
