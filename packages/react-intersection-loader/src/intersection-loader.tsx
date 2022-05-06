@@ -68,7 +68,7 @@ export interface InteractionLoaderOptions {
  * @param options {InteractionLoaderOptions} Interaction loader options.
  */
 export function intersectionLoader<T extends {}>(
-  load: () => Promise<ComponentModule<T>>,
+  load: () => Promise<ComponentModule<T>> | ComponentModule<T>,
   { intersectionObserverOptions, force, fallback, placeholderProps, suspense = true }: InteractionLoaderOptions = {}
 ): ComponentType<T> {
   return function (props: T) {
@@ -129,11 +129,17 @@ export function intersectionLoader<T extends {}>(
     }, []);
 
     if (force) {
-      Component.current ??= lazy(() =>
-        load().then((mod) => ({
-          default: interopDefault(mod) as ComponentType<unknown>,
-        }))
-      );
+      const loaded = load();
+
+      if (isPromise(loaded)) {
+        Component.current ??= lazy(() =>
+          loaded.then((mod) => ({
+            default: interopDefault(mod) as ComponentType<unknown>,
+          }))
+        );
+      } else {
+        Component.current ??= interopDefault(loaded);
+      }
     }
 
     return Component.current !== undefined ? (
@@ -144,4 +150,12 @@ export function intersectionLoader<T extends {}>(
       <div {...placeholderProps} dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning ref={root} />
     );
   };
+}
+
+function isPromise<T>(obj: unknown): obj is Promise<T> {
+  return (
+    Boolean(obj) &&
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof (obj as { then?: unknown }).then === 'function'
+  );
 }
