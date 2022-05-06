@@ -34,13 +34,14 @@ export default function App() {
 
 ### Support
 
+Since this uses react, support verity of use cases is a most.
 #### React
 
 Currently only supported with hooks, react `>=16.8.0`
 
 #### SSR (Server-side rendering)
 
-Full support SSR and hydration!
+Full support of SSR and hydration!
 
 ## Examples
 
