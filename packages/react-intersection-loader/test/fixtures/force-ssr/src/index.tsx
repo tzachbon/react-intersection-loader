@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { intersectionLoader } from 'react-intersection-loader';
 
-//@ts-ignore
+declare const __non_webpack_require__: NodeRequire;
+
 const isSSR = typeof __non_webpack_require__ !== 'undefined';
-//@ts-ignore
-const originalRequire: Function = isSSR ? __non_webpack_require__ : () => void 0;
+const originalRequire = isSSR ? __non_webpack_require__ : () => void 0;
 
 const LazyComponent = intersectionLoader(
   () => (isSSR ? (originalRequire('./lazy') as typeof import('./lazy')) : import('./lazy')),
