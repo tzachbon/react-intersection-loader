@@ -1,8 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/react-intersection-loader/src" },
-    { "path": "./packages/react-intersection-loader/test" },
+    { "path": "./packages/react/src" },
+    { "path": "./packages/react/test" },
     { "path": "./packages/e2e-test-kit/src" }
   ]
 }
