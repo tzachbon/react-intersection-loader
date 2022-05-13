@@ -143,7 +143,7 @@ export function intersectionLoader<T extends {}>(
     }
 
     return Component.current !== undefined ? (
-      <WithSuspense use={force || suspense} fallback={fallback}>
+      <WithSuspense use={suspense ?? force} fallback={fallback}>
         <Component.current {...props} />
       </WithSuspense>
     ) : (
