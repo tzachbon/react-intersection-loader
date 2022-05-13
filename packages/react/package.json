@@ -1,6 +1,6 @@
 {
   "name": "react-intersection-loader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Load react component lazily when the component is visible",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
