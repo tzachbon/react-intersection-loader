@@ -30,11 +30,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.7.18",
-    "@types/react": "^18.0.20",
+    "@types/node": "^18.7.21",
+    "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.37.0",
-    "eslint": "^8.23.1",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-no-only-tests": "^3.0.0",
     "expect": "^29.0.3",
@@ -46,7 +46,7 @@
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
     "source-map-loader": "^4.0.0",
-    "ts-loader": "^9.3.1",
+    "ts-loader": "^9.4.1",
     "typescript": "^4.8.3"
   }
 }
