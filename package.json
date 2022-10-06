@@ -30,10 +30,10 @@
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^10.0.0",
-    "@types/node": "^18.7.23",
+    "@types/node": "^18.8.2",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-no-only-tests": "^3.0.0",
