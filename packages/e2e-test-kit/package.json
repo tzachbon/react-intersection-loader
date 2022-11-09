@@ -21,6 +21,6 @@
     "find-cache-dir": "^3.3.2",
     "playwright": "^1.27.1",
     "rimraf": "^3.0.2",
-    "webpack": "^5.74.0"
+    "webpack": "^5.75.0"
   }
 }
