@@ -19,6 +19,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
+        "EXPERIMENTAL_useProjectService": true,
         "project": "./tsconfig.base.json"
       },
       "extends": [
